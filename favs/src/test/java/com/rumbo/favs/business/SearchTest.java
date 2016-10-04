@@ -250,4 +250,5 @@ public class SearchTest {
 			System.out.println(availabilityResult.toString());
 		}		
 	}
+	
 }

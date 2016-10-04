@@ -197,7 +197,7 @@ public class SearchTest {
 	@Test		
 	public void test15() {
 		try{
-			System.out.println("TEST 15");
+			System.out.println("TEST 15 ");
 			AvailabilityResult availabilityResult = searchEngine.search("CPH", "MAD", 45, 2, 2, 2);		
 			assertNotNull(availabilityResult);
 			assertThat(availabilityResult.getResult(),is(ResultType.OK));

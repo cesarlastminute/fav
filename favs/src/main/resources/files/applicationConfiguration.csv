@@ -1,0 +1,3 @@
+DAYSTODEPARTUREDATE,Days to departure discount,1,1,1,0
+DISCOUNTBYPASSENERTYPE,Discount by passenger type,1,0,1,0
+INFANTBASEPRICE,Apply reduce fare,1,0,0,1

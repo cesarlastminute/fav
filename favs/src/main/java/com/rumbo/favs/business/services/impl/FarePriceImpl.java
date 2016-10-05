@@ -173,7 +173,7 @@ public class FarePriceImpl implements IFarePrice{
 				amount =  (float) ((100 - travellerPrice.getBreakDownPrice().getPassengerDiscount()) * amount) / 100;
 			}
 			
-			travellerPrice.setTotalAmount(amount);
+			travellerPrice.setTotalAmount(amount * travellerPrice.getNumber());
 		}
 	}
 	

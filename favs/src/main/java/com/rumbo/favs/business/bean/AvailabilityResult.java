@@ -1,8 +1,8 @@
 package com.rumbo.favs.business.bean;
 
-import java.text.DecimalFormat;
 import java.util.List;
-import java.util.StringTokenizer;
+
+import com.rumbo.favs.data.utilities.MyMath;
 
 /**
  * Search result
@@ -66,7 +66,7 @@ public class AvailabilityResult {
 			
 			for(FlightResult flightResult : flightResultList){
 				response.append(flightResult.getFlight()).append(comma).append(space).
-					append(getRoundedFloat(flightResult.getTotalAmount())).append(euro);
+					append(MyMath.getRoundedFloat(flightResult.getTotalAmount())).append(euro);
 				response.append(getTravellerPriceListText(flightResult.getTravellerPriceList()));
 				response.append(newLine);
 			}
@@ -121,22 +121,25 @@ public class AvailabilityResult {
 			float hundred = 100;
 			
 			if (travellerPrice.getNumber() > 1){
-				response.append(travellerPrice.getNumber()).append(space).append(multiply).append(space).append(parenthesisOpen);
+				response.append(travellerPrice.getNumber()).append(space).append(multiply).append(space);
+				if (hasDiscount(travellerPrice.getBreakDownPrice())){
+					response.append(parenthesisOpen);
+				}
 			}
 			
 			if(travellerPrice.getBreakDownPrice().getPassengerDiscount() > 0){
-				response.append(getRoundedFloat(hundred - travellerPrice.getBreakDownPrice().getPassengerDiscount())).
+				response.append(MyMath.getRoundedFloat(hundred - travellerPrice.getBreakDownPrice().getPassengerDiscount())).
 				append(percent).append(space).append(of).append(space).append(parenthesisOpen);
 			}
 			
 			if(travellerPrice.getBreakDownPrice().getDateDiscount() > 0){
-				response.append(getRoundedFloat(travellerPrice.getBreakDownPrice().getDateDiscount())).
-				append(percent).append(space).append(of).append(space).append(getRoundedFloat(travellerPrice.getBreakDownPrice().getBasePrice()));
+				response.append(MyMath.getRoundedFloat(travellerPrice.getBreakDownPrice().getDateDiscount())).
+				append(percent).append(space).append(of).append(space).append(MyMath.getRoundedFloat(travellerPrice.getBreakDownPrice().getBasePrice()));
 			}else{
-				response.append(getRoundedFloat(travellerPrice.getBreakDownPrice().getBasePrice()));
+				response.append(MyMath.getRoundedFloat(travellerPrice.getBreakDownPrice().getBasePrice()));
 			}
 			
-			if(travellerPrice.getNumber() > 1){
+			if(travellerPrice.getNumber() > 1 && hasDiscount(travellerPrice.getBreakDownPrice())){
 				response.append(parenthesisClose);
 			}
 			
@@ -147,62 +150,13 @@ public class AvailabilityResult {
 			return response.toString();
 		}		
 		
-		return ""; 	
-	}
+		return ""; 				
+	}	
 	
-	class TravellerPriceResponse{
+	private boolean hasDiscount(BreakDownPrice breakDownPrice){
 		
-		float amount = 0f;
-		String description = "";		
+		return breakDownPrice.getDateDiscount() > 0 || breakDownPrice.getPassengerDiscount() > 0;
 		
-		public TravellerPriceResponse() {
-			super();
-		}
-		
-		public TravellerPriceResponse(float amount, String description) {
-			super();
-			this.amount = amount;
-			this.description = description;
-		}
-		
-		public float getAmount() {
-			return amount;
-		}
-		
-		public void setAmount(float amount) {
-			this.amount = amount;
-		}		
-		
-		public String getDescription() {
-			return description;
-		}
-		
-		public void setDescription(String description) {
-			this.description = description;
-		}	
-		
-	}
-	
-	private String getRoundedFloat(float number){
-		
-		String aux;
-		String separator = ",";
-		String pattern = "00";
-		
-		DecimalFormat df = new DecimalFormat();
-		
-		df.setMaximumFractionDigits(2);
-		df.setMinimumFractionDigits(2);
-		
-		aux = df.format(number);
-		
-		String[] parts = aux.split(separator);
-		
-		if (pattern.equals(parts[1])){
-			return parts[0];
-		}else{
-			return aux;
-		}		
 	}
 	
 }

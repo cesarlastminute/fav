@@ -10,11 +10,9 @@ import java.util.Properties;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runners.MethodSorters;
 
 import com.rumbo.favs.business.bean.AvailabilityResult;
 import com.rumbo.favs.business.bean.FlightResult;
@@ -22,7 +20,7 @@ import com.rumbo.favs.business.bean.ResultType;
 import com.rumbo.favs.business.bean.exceptions.SearchCriteriaException;
 import com.rumbo.favs.business.services.ISearchEngine;
 import com.rumbo.favs.business.services.impl.SearchEngineImpl;
-import com.rumbo.favs.data.utilities.Initialize;
+import com.rumbo.favs.data.utilities.MyMath;
 import com.rumbo.favs.data.utilities.ReadCsv;
 
 public class SearchTest {
@@ -49,11 +47,26 @@ public class SearchTest {
 		return flights;
 	}
 	
+	private String[] getTotalAmountByFlight(AvailabilityResult availabilityResult){
+		
+		String[] totalAmount = new String[0];
+		int count = 0;
+		
+		if (availabilityResult != null && availabilityResult.getFlightResultList() != null){
+			totalAmount = new String[availabilityResult.getFlightResultList().size()];
+			for(FlightResult flightResult : availabilityResult.getFlightResultList()){
+				totalAmount[count] = MyMath.getRoundedFloat(flightResult.getTotalAmount());
+				count++;
+			}
+		}
+		
+		return totalAmount;
+	}
+	
 	@BeforeClass
 	public static void initialize()
 	{
-		Initialize init = new Initialize();
-		init.run();
+		ReadCsv.loadFiles();
 	}
 	
 	@AfterClass
@@ -133,7 +146,17 @@ public class SearchTest {
 	
 	@Test		
 	public void test7() {
-		System.out.println("TEST 7");	   
+		System.out.println("TEST 7");
+		thrown.expect(SearchCriteriaException.class);
+	    thrown.expectMessage(SearchCriteriaException.ERROR_NONE_PASSENGERS);
+	   
+		AvailabilityResult availabilityResult = searchEngine.search("MAD", "BCN", 45, 0, 0, 0);				
+		printResult(availabilityResult);
+	}
+	
+	@Test		
+	public void test8() {
+		System.out.println("TEST 8");	   
 		AvailabilityResult availabilityResult = searchEngine.search("CDG", "FRA", 45, 1, 1, 1);
 		assertNotNull(availabilityResult);
 		assertThat(availabilityResult.getResult(),is(ResultType.KO));
@@ -141,14 +164,45 @@ public class SearchTest {
 	}
 	
 	@Test		
-	public void test8() {
+	public void test9() {
 		try{
-			System.out.println("TEST 8");
-			AvailabilityResult availabilityResult = searchEngine.search("CPH", "FCO", 5, 1, 0, 0);
+			System.out.println("TEST9");
+			AvailabilityResult availabilityResult = searchEngine.search("AMS", "FRA", 30, 1, 0, 0);		
 			assertNotNull(availabilityResult);
 			assertThat(availabilityResult.getResult(),is(ResultType.OK));
-			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("TK4667","U24631"));
+			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("TK2372","TK2659","LH5909"));
+			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("157,60","198,40","90,40"));
 			printResult(availabilityResult);	
+		}catch (SearchCriteriaException e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test		
+	public void test10() {
+		try{
+			System.out.println("TEST 10");
+			AvailabilityResult availabilityResult = searchEngine.search("LHR", "IST", 15, 2, 1, 1);		
+			assertNotNull(availabilityResult);
+			assertThat(availabilityResult.getResult(),is(ResultType.OK));
+			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("TK8891","LH1085"));
+			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("806","481,19"));
+			printResult(availabilityResult);	
+		}catch (SearchCriteriaException e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test		
+	public void test11() {
+		try{
+			System.out.println("TEST 11");
+			AvailabilityResult availabilityResult = searchEngine.search("BCN", "MAD", 2, 1, 2, 0);		
+			assertNotNull(availabilityResult);
+			assertThat(availabilityResult.getResult(),is(ResultType.OK));
+			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("IB2171","LH5496"));
+			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("909,09","1.028,43"));
+			printResult(availabilityResult);		
 		}catch (SearchCriteriaException e){
 			e.printStackTrace();
 		}
@@ -158,87 +212,26 @@ public class SearchTest {
 	public void test12() {
 		try{
 			System.out.println("TEST 12");
-			AvailabilityResult availabilityResult = searchEngine.search("AMS", "FRA", 30, 1, 0, 0);		
+			AvailabilityResult availabilityResult = searchEngine.search("CPH", "FCO", 0, 1, 0, 0);
 			assertNotNull(availabilityResult);
 			assertThat(availabilityResult.getResult(),is(ResultType.OK));
+			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("TK4667","U24631"));
+			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("205,50","402"));
 			printResult(availabilityResult);	
 		}catch (SearchCriteriaException e){
 			e.printStackTrace();
 		}
-	}
+	}	
 	
 	@Test		
 	public void test13() {
 		try{
 			System.out.println("TEST 13");
-			AvailabilityResult availabilityResult = searchEngine.search("LHR", "IST", 15, 2, 1, 1);		
+			AvailabilityResult availabilityResult = searchEngine.search("CDG", "CPH", 17, 3, 2, 2);
 			assertNotNull(availabilityResult);
 			assertThat(availabilityResult.getResult(),is(ResultType.OK));
-			printResult(availabilityResult);	
-		}catch (SearchCriteriaException e){
-			e.printStackTrace();
-		}
-	}
-	
-	@Test		
-	public void test14() {
-		try{
-			System.out.println("TEST 14");
-			AvailabilityResult availabilityResult = searchEngine.search("BCN", "MAD", 2, 1, 2, 0);		
-			assertNotNull(availabilityResult);
-			assertThat(availabilityResult.getResult(),is(ResultType.OK));
-			printResult(availabilityResult);		
-		}catch (SearchCriteriaException e){
-			e.printStackTrace();
-		}
-	}
-	
-	@Test		
-	public void test15() {
-		try{
-			System.out.println("TEST 15");
-			AvailabilityResult availabilityResult = searchEngine.search("CPH", "MAD", 45, 2, 2, 2);		
-			assertNotNull(availabilityResult);
-			assertThat(availabilityResult.getResult(),is(ResultType.OK));
-			printResult(availabilityResult);	
-		}catch (SearchCriteriaException e){
-			e.printStackTrace();
-		}
-	}
-	
-	@Test		
-	public void test16() {
-		try{
-			System.out.println("TEST 16");
-			AvailabilityResult availabilityResult = searchEngine.search("CPH", "MAD", 45, 0, 1, 0);		
-			assertNotNull(availabilityResult);
-			assertThat(availabilityResult.getResult(),is(ResultType.OK));
-			printResult(availabilityResult);	
-		}catch (SearchCriteriaException e){
-			e.printStackTrace();
-		}	
-	}
-	
-	@Test		
-	public void test17() {
-		try{
-			System.out.println("TEST 17");
-			AvailabilityResult availabilityResult = searchEngine.search("CPH", "MAD", 45, 0, 0, 1);		
-			assertNotNull(availabilityResult);
-			assertThat(availabilityResult.getResult(),is(ResultType.OK));
-			printResult(availabilityResult);	
-		}catch (SearchCriteriaException e){
-			e.printStackTrace();
-		}
-	}
-	
-	@Test		
-	public void test18() {
-		try{
-			System.out.println("TEST 18 ");
-			AvailabilityResult availabilityResult = searchEngine.search("CPH", "MAD", 45, 1, 1, 1);		
-			assertNotNull(availabilityResult);
-			assertThat(availabilityResult.getResult(),is(ResultType.OK));
+			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("LH5778","IB5257","TK2044"));
+			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("1.155,42","1.317,66","817,24"));
 			printResult(availabilityResult);	
 		}catch (SearchCriteriaException e){
 			e.printStackTrace();

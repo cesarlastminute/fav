@@ -57,6 +57,10 @@ public class SearchCriteria {
 			return SearchCriteriaException.ERROR_NUM_PASSENGERS;
 		}
 		
+		if (numAdult == 0 && numChild == 0 && numInfant == 0){
+			return SearchCriteriaException.ERROR_NONE_PASSENGERS;
+		}
+		
 		return "";		
 	}	
 	

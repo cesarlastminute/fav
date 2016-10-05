@@ -3,8 +3,6 @@ package com.rumbo.favs.data.dao.impl;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,7 +21,6 @@ import org.xml.sax.SAXException;
 import com.rumbo.favs.data.dao.IFlightDao;
 import com.rumbo.favs.data.entities.Flight;
 import com.rumbo.favs.data.entities.FlightGroup;
-import com.rumbo.favs.data.utilities.Initialize;
 import com.rumbo.favs.data.utilities.ManageProperties;
 import com.rumbo.favs.data.utilities.ReadCsv;
 

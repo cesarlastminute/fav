@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.Properties;
-
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,10 +22,6 @@ import com.rumbo.favs.data.utilities.MyMath;
 import com.rumbo.favs.data.utilities.ReadCsv;
 
 public class SearchTest {
-	
-	Properties prop = new Properties();
-	
-	String configFile = "config.properties";	
 	
 	private static ISearchEngine searchEngine;
 	
@@ -232,6 +226,21 @@ public class SearchTest {
 			assertThat(availabilityResult.getResult(),is(ResultType.OK));
 			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("LH5778","IB5257","TK2044"));
 			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("1.155,42","1.317,66","817,24"));
+			printResult(availabilityResult);	
+		}catch (SearchCriteriaException e){
+			e.printStackTrace();
+		}
+	}
+	
+	@Test		
+	public void test14() {
+		try{
+			System.out.println("TEST 14");
+			AvailabilityResult availabilityResult = searchEngine.search("FRA", "LHR", 60, 1, 1, 1);
+			assertNotNull(availabilityResult);
+			assertThat(availabilityResult.getResult(),is(ResultType.OK));
+			assertThat(getFlights(availabilityResult), arrayContainingInAnyOrder("BA8162","IB9443","TK3167"));
+			assertThat(getTotalAmountByFlight(availabilityResult), arrayContainingInAnyOrder("288,88","349,34","162,65"));
 			printResult(availabilityResult);	
 		}catch (SearchCriteriaException e){
 			e.printStackTrace();
